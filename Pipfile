@@ -8,6 +8,10 @@ numpy = "*"
 ipykernel = "*"
 networkx = "*"
 requests = "*"
+autopep8 = "*"
+matplotlib = "*"
+pandas = "*"
+seaborn = "*"
 
 [dev-packages]
 
