@@ -2,8 +2,10 @@ import requests
 import sys
 
 if __name__ == '__main__':
-  url = 'https://download.geofabrik.de/europe-latest.osm.pbf'
-  file_name = 'data/europe.osm.pbf'
+  url = 'https://download.geofabrik.de/europe/malta-latest.osm.pbf'
+  # url = 'https://download.geofabrik.de/europe-latest.osm.pbf'
+
+  file_name = 'data/malta.osm.pbf'
 
   with open(file_name, "wb") as f:
     print("Downloading %s" % file_name)
