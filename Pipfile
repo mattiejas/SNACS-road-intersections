@@ -10,6 +10,9 @@ networkx = "*"
 requests = "*"
 autopep8 = "*"
 tqdm = "*"
+matplotlib = "*"
+pandas = "*"
+seaborn = "*"
 
 [dev-packages]
 
