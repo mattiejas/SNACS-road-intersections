@@ -8,6 +8,8 @@ numpy = "*"
 ipykernel = "*"
 networkx = "*"
 requests = "*"
+autopep8 = "*"
+tqdm = "*"
 
 [dev-packages]
 
