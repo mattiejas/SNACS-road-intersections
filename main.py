@@ -16,20 +16,41 @@ if __name__ == '__main__':
     if not os.path.exists(f'{dir}/{country}.osm.pbf'):
         print(f'Downloading {country}...')
         subprocess.run(['python3', './download.py', country])
+    else:
+        print(f'{country} already downloaded.')
 
-    filter_tags_command = f"osmium tags-filter {dir}/{country}.osm.pbf w/highway=motorway,primary,trunk -o {dir}/{country}-highways.xml --overwrite"
-    subprocess.run(filter_tags_command, shell=True)
+    print(f'Converting {country}...')
 
-    create_networkx_json = f"python ./libs/OsmToRoadGraph/run.py -f {dir}/{country}-highways.xml --networkx"
-    subprocess.run(create_networkx_json, shell=True)
+    if not os.path.exists(f'{dir}/{country}-highways.xml'):
+        filter_tags_command = f"osmium tags-filter {dir}/{country}.osm.pbf w/highway=motorway,primary,trunk -o {dir}/{country}-highways.xml --overwrite"
+        subprocess.run(filter_tags_command, shell=True)
+    else:
+        print(f'{country}-highways.xml already exists.')
+
+    if not os.path.exists(f"{dir}/{country}-highways.json"):
+        create_networkx_json = f"python ./libs/OsmToRoadGraph/run.py -f {dir}/{country}-highways.xml --networkx"
+        subprocess.run(create_networkx_json, shell=True)
+    else:
+        print(f'{country}-highways.json already exists.')
 
     file_name = f"{dir}/{country}-highways.json"
 
-    with open(file_name) as f:
-        json_data = json.load(f)
+    if not os.path.exists(f'{dir}/{country}-highways.csv'):
+        with open(file_name) as f:
+            json_data = json.load(f)
 
-    G = nx.readwrite.json_graph.adjacency_graph(json_data)
-    nx.write_edgelist(G, f'{dir}/{country}-highways.csv', data=False)
+        G = nx.readwrite.json_graph.adjacency_graph(json_data)
+        nx.write_edgelist(G, f'{dir}/{country}-highways.csv', data=False)
+    else:
+        print(f'{country}-highways.csv already exists.')
 
-    create_image = f"python libs/OsmToRoadGraph/examples/pycgr-to-png/pycgr-to-png.py -f {dir}/{country}-highways.pypgr -o {dir}/{country}.png"
-    subprocess.run(create_image, shell=True)
+    if not os.path.exists(f'{dir}/{country}.png'):
+        create_image = f"python libs/OsmToRoadGraph/examples/pycgr-to-png/pycgr-to-png.py -f {dir}/{country}-highways.pypgr -o {dir}/{country}.png"
+        subprocess.run(create_image, shell=True)
+    else:
+        print(f'{country}.png already exists.')
+
+    # run ANF
+    anf = f"./ANF {dir}/{country}-highways.csv"
+    print(f'Running ANF on {country}...')
+    subprocess.run(anf, shell=True)
