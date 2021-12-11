@@ -1,0 +1,36 @@
+USAGE:
+       make
+    to see a demo. Check the beginning of the 'anf.c' file for more info
+
+INPUT FILE:
+    see 'sample.inp' - it is the edge list, with the first line
+    declaring (an upper limit on) the number of nodes 
+
+-------
+From: Christopher Robert Palmer <crpalmer@cs.cmu.edu>
+To: Christos Faloutsos <christos@athena.pc.cs.cmu.edu>, 
+Subject: Re: growing power law graphs
+
+
+I've attached a copy of my anf code.  It's actually just a single .c
+file which has instructions on building at the head of the file.
+It computes either:
+
+N(h) : number of pairs of nodes within distance h for h = 0 to the
+       estimated diameter, or
+N(x,h) : number of nodes within distance h of node x for each node, x,
+       and each distance, h.
+
+There are two warnings that I should give you.  First, you can't reliably
+compute the diameter of the grain with this code.  It is an approximation
+and will be fooled by, for example, a giant clique which has a single
+path that wanders off (it will lead you to believe that the diameter is 1,
+not the length of this single path).  I got lazy with the N(x,h) computation
+and you cannot use it for very large graphs (bigger than what you can
+process in memory).  This is likely not a restriction if you're trying
+to do it with dykstra's algorithm.
+
+Let me know if you need more help with the software.
+
+Cheers,
+Chris.
