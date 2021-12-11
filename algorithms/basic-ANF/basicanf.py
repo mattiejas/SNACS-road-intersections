@@ -39,6 +39,7 @@ class BasicANF():
 
         # Generate k bitmask for each node
         M[0] = {node: self.generate_concatinated_bitmasks() for node in self.nodes}
+        IN[0] = {node: 0 for node in self.nodes}
 
         for h in range(1, max_distance):
             # Set the value of M[h] to previous values
@@ -52,7 +53,7 @@ class BasicANF():
             IN[h] = {node: self.approximate_distance_from_mask(M[h][node]) for node in self.nodes}
 
         # Return mean neighbourhood size for every distance
-        return {h: np.mean(list(IN[h].values())) for h in range(1, max_distance)}, IN, M
+        return {h: np.mean(list(IN[h].values())) for h in range(0, max_distance)}, IN, M
 
     def approximate_distance_from_mask(self, combined_mask):
         return 2**self.get_mean_least_zero_bit(combined_mask) / 0.77351
