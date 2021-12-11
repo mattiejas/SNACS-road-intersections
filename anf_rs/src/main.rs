@@ -1,11 +1,11 @@
 mod anf;
 
 fn main() {
-    let edges = split_line(&std::fs::read_to_string("edgelist.csv").unwrap());
-    // let edges = vec![(0, 1), (0, 2), (1, 2), (2, 0), (2, 3), (3, 3)];
-    let mut model = anf::ANF::new(edges, 7, 64);
-    let N = model.compute(5);
-    println!("{:?}", N);
+    let edges = split_line(&std::fs::read_to_string("../edgelist.csv").unwrap());
+    let mut model = anf::ANF::new(edges, 7, 128);
+    let (neighbourhood_sizes, mean_sizes) = model.compute(5);
+    println!("neighbourhood_sizes = {:#?}", neighbourhood_sizes);
+    println!("mean = {:#?}", mean_sizes);
 }
 
 fn split_line(line: &str) -> Vec<(usize, usize)> {

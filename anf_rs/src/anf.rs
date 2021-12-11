@@ -26,11 +26,13 @@ impl ANF {
         ANF { r, k, edges, nodes }
     }
 
-    pub fn compute(&mut self, max_distance: usize) -> Vec<f64> {
+    pub fn compute(&mut self, max_distance: usize) -> (Vec<f64>, Vec<f64>) {
         // let M = vec![HashMap::new<T, usize>(); max_distance];
         let bitmask_len = self.bitmask_length();
         println!(
-            "bitmask_len: {}, nodes: {}, edges: {}",
+            "r: {}, k: {}, bitmask_len: {}, nodes: {}, edges: {}",
+            self.r,
+            self.k,
             bitmask_len,
             self.nodes.len(),
             self.edges.len()
@@ -68,17 +70,19 @@ impl ANF {
 
         // return mean neighbourhood size for every distance
         let mut neigh_size: Vec<f64> = vec![self.nodes.len() as f64];
+        let mut mean_neigh_size: Vec<f64> = vec![1.0];
+
         for h in 1..max_distance {
             let mut sum = 0.0;
             // println!("{:?}", individual_neigh[h]);
             for node in &self.nodes {
                 sum += individual_neigh[h].get(node).unwrap();
             }
-            // mean_neigh_size.push(sum / self.nodes.len() as f64);
+            mean_neigh_size.push(sum / self.nodes.len() as f64);
             neigh_size.push(sum);
         }
 
-        return neigh_size;
+        return (neigh_size, mean_neigh_size);
     }
 
     fn bitmask_length(&self) -> usize {
@@ -92,6 +96,7 @@ impl ANF {
         for i in 0..len {
             if rng.gen_bool(0.5_f64.powi((i + 1 as usize) as i32)) {
                 bitmask |= 1 << i;
+                return bitmask;
             }
         }
         bitmask
