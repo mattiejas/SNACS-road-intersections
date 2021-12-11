@@ -13,6 +13,7 @@ tqdm = "*"
 matplotlib = "*"
 pandas = "*"
 seaborn = "*"
+snap-stanford = "*"
 
 [dev-packages]
 

@@ -1,7 +1,5 @@
 import numpy as np
-from numpy.core.numeric import argwhere
-
-rng = np.random.default_rng()
+import tqdm
 
 
 class BasicANF():
@@ -9,6 +7,7 @@ class BasicANF():
         self.edge_list = edge_list
         self.r = r
         self.k = k
+        self.rng = np.random.default_rng(seed=103)
 
         self.nodes = list(set(np.array(edge_list).flatten()))
 
@@ -17,11 +16,12 @@ class BasicANF():
 
     def generate_bit_mask(self):
         mask = np.full(self.bitmask_length, False)
-        for i in range(self.bitmask_length):
-            # Check whether or not we assign bit to node
-            if rng.random() < 0.5**(i + 1):
-                mask[i] = True
-                break
+
+        odds = 0.5**(np.arange(0, self.bitmask_length) + 1)
+        index = self.rng.choice(a=np.arange(0, self.bitmask_length + 1), p=[*odds, 1 - np.sum(odds)])
+
+        if index != len(mask):
+            mask[index] = True
 
         return mask
 
@@ -71,4 +71,19 @@ class BasicANF():
         if len(args) == 0:
             return self.bitmask_length
 
-        return args[0]
+        return args[0][0]
+
+    def _test_generate_bitmask(self):
+        masks = {b: 0 for b in range(self.bitmask_length + 1)}
+        N_samples = 1_000_00
+        for _ in tqdm.tqdm(range(N_samples)):
+            mask = self.generate_bit_mask()
+            b = np.argwhere(mask == True).reshape(-1)
+
+            if len(b) == 0:
+                masks[self.bitmask_length] += 1
+            else:
+                masks[b[0]] += 1
+
+        for k, v in masks.items():
+            print(k, v / N_samples)
