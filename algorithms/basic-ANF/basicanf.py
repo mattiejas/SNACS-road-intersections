@@ -39,7 +39,7 @@ class BasicANF():
 
         # Generate k bitmask for each node
         M[0] = {node: self.generate_concatinated_bitmasks() for node in self.nodes}
-        IN[0] = {node: 0 for node in self.nodes}
+        IN[0] = {node: 1 for node in self.nodes}
 
         for h in range(1, max_distance):
             # Set the value of M[h] to previous values
