@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fmt::Debug, hash::Hash};
+use std::collections::HashMap;
 
 use rand::Rng;
 
@@ -92,14 +92,17 @@ impl ANF {
     fn generate_bitmask(&self, len: usize) -> usize {
         // generate bitmask of size len
         let mut rng = rand::thread_rng();
-        let mut bitmask = 0;
+        let mut sum: f64 = 0.;
+        let p: f64 = rng.gen();
+
         for i in 0..len {
-            if rng.gen_bool(0.5_f64.powi((i + 1 as usize) as i32)) {
-                bitmask |= 1 << i;
-                return bitmask;
+            sum += 0.5_f64.powi((i + 1) as i32);
+
+            if p < sum {
+                return 1 << i;
             }
         }
-        bitmask
+        return 0;
     }
 
     fn generate_concat_bitmasks(&self, len: usize) -> Vec<usize> {
@@ -115,6 +118,6 @@ impl ANF {
     }
 
     fn approx_dist(&self, bitmask: &[usize]) -> f64 {
-        return 2_i64.pow(self.get_mean_least_zero_bit(bitmask) as u32) as f64 / 0.77351_f64;
+        return 2_f64.powf(self.get_mean_least_zero_bit(bitmask)) / 0.77351_f64;
     }
 }
