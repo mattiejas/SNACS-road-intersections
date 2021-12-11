@@ -8,4 +8,7 @@ with open(file_name) as f:
     json_data = json.load(f)
 
 G = nx.readwrite.json_graph.adjacency_graph(json_data)
-nx.write_edgelist(G, 'data/highways.csv', data=False)
+# nx.write_edgelist(G, 'data/highways.csv', data=False)
+
+# %%
+G.info()

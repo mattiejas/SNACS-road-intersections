@@ -1,30 +1,22 @@
+mod anf;
+
 fn main() {
-    let bit_one = 0b01;
-    let bit_two = 0b10;
-    let bit_three = bit_one | bit_two;
-    println!("{:b}", bit_three);
+    let edges = split_line(&std::fs::read_to_string("edgelist.csv").unwrap());
+    // let edges = vec![(0, 1), (0, 2), (1, 2), (2, 0), (2, 3), (3, 3)];
+    let mut model = anf::ANF::new(edges, 7, 64);
+    let N = model.compute(5);
+    println!("{:?}", N);
 }
 
-fn get_unique_nodes<T: Ord, Clone>(edges: &[(T, T)]) -> Vec<T> {
-    let mut nodes = vec![];
-    for &(from, to) in edges.clone().iter() {
-        nodes.push(from);
-        nodes.push(to);
-    }
-    nodes.sort();
-    nodes.dedup();
-    nodes
-}
-
-struct ANF<T> {
-    r: u8,
-    k: u8,
-    edges: Vec<(T, T)>,
-    nodes: Vec<T>,
-}
-
-impl<T> ANF<T> {
-    fn new(edges: Vec<(T, T)>, nodes: Vec<T>, r: u8, k: u8) -> ANF<T> {
-        ANF { r, k, edges, nodes }
-    }
+fn split_line(line: &str) -> Vec<(usize, usize)> {
+    line.split('\n')
+        .filter(|s| !s.is_empty())
+        .map(|s| {
+            let (x, y) = s.trim().split_once(',').unwrap();
+            (
+                x.trim().parse::<usize>().unwrap(),
+                y.trim().parse::<usize>().unwrap(),
+            )
+        })
+        .collect()
 }
