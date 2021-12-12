@@ -1,25 +1,44 @@
+use std::env;
 mod anf;
 
 fn main() {
-    let now = std::time::Instant::now();
+    // Prints each argument on a separate line
+    if env::args().len() < 2 {
+        println!("Usage: anf <filename> [distance] [r] [k]");
+        return;
+    }
 
-    let edges = split_line(&std::fs::read_to_string("../edgelist.csv").unwrap());
-    let mut model = anf::ANF::new(edges, 7, 128);
-    let (neighbourhood_sizes, mean_sizes) = model.compute(5);
-    println!("neighbourhood_sizes = {:#?}", neighbourhood_sizes);
-    println!("mean = {:#?}", mean_sizes);
+    let distance = env::args()
+        .nth(2)
+        .unwrap_or("5".to_string())
+        .parse::<usize>()
+        .unwrap();
 
-    println!(
-        "ran for {}ms",
-        (now.elapsed().as_nanos()) as f32 / 1000000f32
-    );
+    let r = env::args()
+        .nth(3)
+        .unwrap_or("7".to_string())
+        .parse::<usize>()
+        .unwrap();
+
+    let k = env::args()
+        .nth(4)
+        .unwrap_or("128".to_string())
+        .parse::<usize>()
+        .unwrap();
+
+    let filename = env::args().nth(1).unwrap();
+    let edges = split_line(&std::fs::read_to_string(filename).unwrap(), " ");
+    let mut model = anf::ANF::new(edges, r, k);
+    let result = model.compute(distance);
+
+    println!("{}", serde_json::to_string(&result).unwrap());
 }
 
-fn split_line(line: &str) -> Vec<(usize, usize)> {
+fn split_line(line: &str, delim: &str) -> Vec<(usize, usize)> {
     line.split('\n')
         .filter(|s| !s.is_empty())
         .map(|s| {
-            let (x, y) = s.trim().split_once(',').unwrap();
+            let (x, y) = s.trim().split_once(delim).unwrap();
             (
                 x.trim().parse::<usize>().unwrap(),
                 y.trim().parse::<usize>().unwrap(),
