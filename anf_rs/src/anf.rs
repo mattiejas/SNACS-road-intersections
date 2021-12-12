@@ -1,3 +1,4 @@
+use serde::Serialize;
 use std::collections::HashMap;
 
 use rand::Rng;
@@ -20,24 +21,29 @@ pub struct ANF {
     nodes: Vec<usize>,
 }
 
+#[derive(Serialize)]
+pub struct Result {
+    r: usize,
+    k: usize,
+    max_distance: usize,
+    neighbourhoods: Vec<f64>,
+    mean_individual_neighbourhoods: Vec<f64>,
+    time_in_ms: f32,
+    bitmask_length: usize,
+    nodes: usize,
+    edges: usize,
+}
+
 impl ANF {
     pub fn new(edges: Vec<(usize, usize)>, r: usize, k: usize) -> ANF {
         let nodes = get_unique_nodes(&edges);
         ANF { r, k, edges, nodes }
     }
 
-    pub fn compute(&mut self, max_distance: usize) -> (Vec<f64>, Vec<f64>) {
-        // let M = vec![HashMap::new<T, usize>(); max_distance];
-        let bitmask_len = self.bitmask_length();
-        println!(
-            "r: {}, k: {}, bitmask_len: {}, nodes: {}, edges: {}",
-            self.r,
-            self.k,
-            bitmask_len,
-            self.nodes.len(),
-            self.edges.len()
-        );
+    pub fn compute(&mut self, max_distance: usize) -> Result {
+        let now = std::time::Instant::now();
 
+        let bitmask_len = self.bitmask_length();
         let mut matrices: Vec<HashMap<usize, Vec<usize>>> = vec![];
         matrices.insert(0, HashMap::new());
 
@@ -82,7 +88,19 @@ impl ANF {
             neigh_size.push(sum);
         }
 
-        return (neigh_size, mean_neigh_size);
+        let time = (now.elapsed().as_nanos()) as f32 / 1000000f32;
+
+        return Result {
+            r: self.r,
+            k: self.k,
+            max_distance,
+            neighbourhoods: neigh_size,
+            mean_individual_neighbourhoods: mean_neigh_size,
+            time_in_ms: time,
+            bitmask_length: bitmask_len,
+            nodes: self.nodes.len(),
+            edges: self.edges.len(),
+        };
     }
 
     fn bitmask_length(&self) -> usize {

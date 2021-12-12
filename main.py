@@ -4,11 +4,8 @@ import sys
 import subprocess
 import os
 
-if __name__ == '__main__':
-    country = 'netherlands'
-    if len(sys.argv) == 2:
-        country = sys.argv[1]
 
+def ANF(country, distance=5, r=7, k=128):
     dir = f'./data/{country}'
     if not os.path.exists(dir):
         os.makedirs(dir)
@@ -53,4 +50,27 @@ if __name__ == '__main__':
     # run ANF
     anf = f"./ANF {dir}/{country}-highways.csv"
     print(f'Running ANF on {country}...')
-    subprocess.run(anf, shell=True)
+    result = subprocess.run(anf, shell=True, stdout=subprocess.PIPE)
+    x = json.loads(result.stdout.decode('utf-8'))
+    print(x)  # TODO; generate graphs or something
+
+
+if __name__ == '__main__':
+    country = 'netherlands'
+    distance = 5
+    r = 7
+    k = 128
+
+    if len(sys.argv) >= 2:
+        country = sys.argv[1]
+
+    if len(sys.argv) >= 3:
+        distance = sys.argv[2]
+
+    if len(sys.argv) >= 4:
+        r = sys.argv[3]
+
+    if len(sys.argv) >= 5:
+        k = sys.argv[4]
+
+    ANF(country, distance, r, k)
