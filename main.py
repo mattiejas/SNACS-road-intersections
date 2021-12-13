@@ -1,4 +1,5 @@
 import networkx as nx
+import numpy as np
 import json
 import sys
 import subprocess
@@ -19,7 +20,7 @@ def ANF(country, distance=5, r=7, k=128):
     print(f'Converting {country}...')
 
     if not os.path.exists(f'{dir}/{country}-highways.xml'):
-        filter_tags_command = f"osmium tags-filter {dir}/{country}.osm.pbf w/highway=motorway,primary,trunk -o {dir}/{country}-highways.xml --overwrite"
+        filter_tags_command = f"osmium tags-filter {dir}/{country}.osm.pbf w/highway=motorway,primary,trunk,motorway_link,trunk_link,primary_link -o {dir}/{country}-highways.xml --overwrite"
         subprocess.run(filter_tags_command, shell=True)
     else:
         print(f'{country}-highways.xml already exists.')
