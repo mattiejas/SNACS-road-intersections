@@ -4,6 +4,7 @@ import json
 import sys
 import subprocess
 import os
+import yaml
 
 
 def print_if_verbose(verbose, *args):
@@ -54,10 +55,13 @@ def ANF(country, distance=5, r=7, k=128, verbose=False):
         print_if_verbose(verbose, f'{country}.png already exists.')
 
     # run ANF
-    anf = f"./ANF {dir}/{country}-highways.csv"
+    anf = f"./ANF {dir}/{country}-highways.csv {distance} {r} {k}"
     print_if_verbose(verbose, f'Running ANF on {country}...')
     result = subprocess.run(anf, shell=True, stdout=subprocess.PIPE)
-    return json.loads(result.stdout.decode('utf-8'))
+    x = json.loads(result.stdout.decode('utf-8'))
+    print_if_verbose(verbose, f'\n\n\n---------------------{country}---------------------\n')
+    print_if_verbose(verbose, yaml.dump(x))
+    return x
 
 
 if __name__ == '__main__':

@@ -16,6 +16,7 @@ seaborn = "*"
 snap-stanford = "*"
 pillow = "*"
 utm = "*"
+pyyaml = "*"
 
 [dev-packages]
 
