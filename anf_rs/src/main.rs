@@ -27,7 +27,16 @@ fn main() {
         .unwrap();
 
     let filename = env::args().nth(1).unwrap();
-    let edges = split_line(&std::fs::read_to_string(filename).unwrap(), " ");
+    let content = &std::fs::read_to_string(filename).unwrap();
+    let directed_edges = split_line(content, " ");
+
+    let mut edges: Vec<(usize, usize)> = directed_edges
+        .iter()
+        .cloned()
+        .map(|(a, b)| (b, a))
+        .collect();
+    edges.extend(directed_edges);
+
     let mut model = anf::ANF::new(edges, r, k);
     let result = model.compute(distance);
 
