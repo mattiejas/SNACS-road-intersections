@@ -12,7 +12,7 @@ def print_if_verbose(verbose, *args):
         print(*args)
 
 
-def simplifyGraph(G):
+def simplify_graph(G):
     ''' Loop over the graph until all nodes of degree 2 have been removed and their incident edges fused '''
 
     g = G.copy()
@@ -78,9 +78,7 @@ def ANF(country, distance=5, r=7, k=128, verbose=False):
         Gcc = sorted(nx.connected_components(G), key=len, reverse=True)
 
         G0 = G.subgraph(Gcc[0])
-        print(G0)
-        G0 = simplifyGraph(G0)
-        print(G0, nx.is_connected(G0))
+        G0 = simplify_graph(G0)
 
         nx.write_edgelist(G0, f'{dir}/{country}-highways.csv', data=False)
     else:
