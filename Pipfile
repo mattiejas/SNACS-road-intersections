@@ -17,6 +17,7 @@ snap-stanford = "*"
 pillow = "*"
 utm = "*"
 pyyaml = "*"
+scipy = "*"
 
 [dev-packages]
 
