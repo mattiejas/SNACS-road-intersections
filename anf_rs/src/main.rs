@@ -4,7 +4,7 @@ mod anf;
 fn main() {
     // Prints each argument on a separate line
     if env::args().len() < 2 {
-        println!("Usage: anf <filename> [distance] [r] [k]");
+        println!("Usage: anf <filename> [distance] [r] [k] [in]");
         return;
     }
 
@@ -26,6 +26,12 @@ fn main() {
         .parse::<usize>()
         .unwrap();
 
+    let show_in = env::args()
+        .nth(5)
+        .unwrap_or("false".to_string())
+        .parse::<bool>()
+        .unwrap();
+
     let filename = env::args().nth(1).unwrap();
     let content = &std::fs::read_to_string(filename).unwrap();
     let directed_edges = split_line(content, " ");
@@ -38,7 +44,7 @@ fn main() {
     edges.extend(directed_edges);
 
     let mut model = anf::ANF::new(edges, r, k);
-    let result = model.compute(distance);
+    let result = model.compute(distance, show_in);
 
     println!("{}", serde_json::to_string(&result).unwrap());
 }
