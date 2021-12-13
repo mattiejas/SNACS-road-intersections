@@ -68,21 +68,21 @@ def ANF(country, distance=5, r=7, k=128, verbose=False):
 
     file_name = f"{dir}/{country}-highways.json"
 
-    # if not os.path.exists(f'{dir}/{country}-highways.csv'):
-    with open(file_name) as f:
-        json_data = json.load(f)
+    if not os.path.exists(f'{dir}/{country}-highways.csv'):
+        with open(file_name) as f:
+            json_data = json.load(f)
 
-    G = nx.readwrite.json_graph.adjacency_graph(json_data).to_undirected()
+        G = nx.readwrite.json_graph.adjacency_graph(json_data).to_undirected()
 
-    # Get giant component
-    Gcc = sorted(nx.connected_components(G), key=len, reverse=True)
+        # Get giant component
+        Gcc = sorted(nx.connected_components(G), key=len, reverse=True)
 
-    G0 = G.subgraph(Gcc[0])
-    G0 = simplifyGraph(G0)
+        G0 = G.subgraph(Gcc[0])
+        G0 = simplify_graph(G0)
 
-    nx.write_edgelist(G0, f'{dir}/{country}-highways.csv', data=False)
-    # else:
-    #     print_if_verbose(verbose, f'{country}-highways.csv already exists.')
+        nx.write_edgelist(G0, f'{dir}/{country}-highways.csv', data=False)
+    else:
+        print_if_verbose(verbose, f'{country}-highways.csv already exists.')
 
     if not os.path.exists(f'{dir}/{country}.png'):
         create_image = f"python libs/OsmToRoadGraph/examples/pycgr-to-png/pycgr-to-png.py -f {dir}/{country}-highways.pypgr -o {dir}/{country}.png"
