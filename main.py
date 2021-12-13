@@ -12,6 +12,35 @@ def print_if_verbose(verbose, *args):
         print(*args)
 
 
+def simplifyGraph(G):
+    ''' Loop over the graph until all nodes of degree 2 have been removed and their incident edges fused '''
+
+    g = G.copy()
+
+    while any(degree == 2 for _, degree in g.degree):
+
+        g0 = g.copy()  # <- simply changing g itself would cause error `dictionary changed size during iteration`
+        nodes_to_remove = []
+        for node, degree in g0.degree():
+            if degree == 2:
+                edges = g0.edges(node)
+                edges = list(edges)
+                a0, b0 = edges[0]
+                a1, b1 = edges[1]
+
+                e0 = a0 if a0 != node else b0
+                e1 = a1 if a1 != node else b1
+
+                nodes_to_remove.append(node)
+                g0.add_edge(e0, e1)
+
+        for n in nodes_to_remove:
+            g0.remove_node(n)
+        g = g0
+
+    return g
+
+
 def ANF(country, distance=5, r=7, k=128, verbose=False):
     dir = f'./data/{country}'
     if not os.path.exists(dir):
@@ -43,8 +72,17 @@ def ANF(country, distance=5, r=7, k=128, verbose=False):
         with open(file_name) as f:
             json_data = json.load(f)
 
-        G = nx.readwrite.json_graph.adjacency_graph(json_data)
-        nx.write_edgelist(G, f'{dir}/{country}-highways.csv', data=False)
+        G = nx.readwrite.json_graph.adjacency_graph(json_data).to_undirected()
+
+        # Get giant component
+        Gcc = sorted(nx.connected_components(G), key=len, reverse=True)
+
+        G0 = G.subgraph(Gcc[0])
+        print(G0)
+        G0 = simplifyGraph(G0)
+        print(G0, nx.is_connected(G0))
+
+        nx.write_edgelist(G0, f'{dir}/{country}-highways.csv', data=False)
     else:
         print_if_verbose(verbose, f'{country}-highways.csv already exists.')
 
