@@ -41,7 +41,7 @@ def simplify_graph(G):
     return g
 
 
-def ANF(country, distance=5, r=7, k=128, verbose=False):
+def ANF(country, distance=5, r=7, k=128, show_IN=False, verbose=False):
     dir = f'./data/{country}'
     if not os.path.exists(dir):
         os.makedirs(dir)
@@ -91,7 +91,7 @@ def ANF(country, distance=5, r=7, k=128, verbose=False):
         print_if_verbose(verbose, f'{country}.png already exists.')
 
     # run ANF
-    anf = f"./ANF {dir}/{country}-highways.csv {distance} {r} {k}"
+    anf = f"./ANF {dir}/{country}-highways.csv {distance} {r} {k} {'true' if show_IN else 'false'}"
     print_if_verbose(verbose, f'Running ANF on {country}...')
     result = subprocess.run(anf, shell=True, stdout=subprocess.PIPE)
     x = json.loads(result.stdout.decode('utf-8'))
@@ -105,6 +105,7 @@ if __name__ == '__main__':
     distance = 5
     r = 7
     k = 128
+    show_IN = False
 
     if len(sys.argv) >= 2:
         country = sys.argv[1]
@@ -118,4 +119,7 @@ if __name__ == '__main__':
     if len(sys.argv) >= 5:
         k = sys.argv[4]
 
-    ANF(country, distance, r, k, verbose=True)
+    if len(sys.argv) >= 6:
+        show_IN = sys.argv[5]
+
+    ANF(country, distance, r, k, show_IN, verbose=True)

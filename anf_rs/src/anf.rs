@@ -32,6 +32,7 @@ pub struct Result {
     bitmask_length: usize,
     nodes: usize,
     edges: usize,
+    individual_neighbourhoods: Option<Vec<HashMap<usize, f64>>>,
 }
 
 impl ANF {
@@ -40,14 +41,14 @@ impl ANF {
         ANF { r, k, edges, nodes }
     }
 
-    pub fn compute(&mut self, max_distance: usize) -> Result {
+    pub fn compute(&mut self, max_distance: usize, show_in: bool) -> Result {
         let now = std::time::Instant::now();
 
         let bitmask_len = self.bitmask_length();
         let mut matrices: Vec<HashMap<usize, Vec<usize>>> = vec![];
         matrices.insert(0, HashMap::new());
 
-        let mut individual_neigh: Vec<HashMap<&usize, f64>> = vec![];
+        let mut individual_neigh: Vec<HashMap<usize, f64>> = vec![];
         individual_neigh.insert(0, HashMap::new());
 
         for n in &self.nodes {
@@ -70,7 +71,10 @@ impl ANF {
             // approximate distrance based on the k masks
             individual_neigh.push(HashMap::new());
             for node in &self.nodes {
-                individual_neigh[h].insert(node, self.approx_dist(matrices[h].get(&node).unwrap()));
+                individual_neigh[h].insert(
+                    node.clone(),
+                    self.approx_dist(matrices[h].get(&node).unwrap()),
+                );
             }
         }
 
@@ -100,6 +104,11 @@ impl ANF {
             bitmask_length: bitmask_len,
             nodes: self.nodes.len(),
             edges: self.edges.len(),
+            individual_neighbourhoods: if show_in {
+                Some(individual_neigh)
+            } else {
+                None
+            },
         };
     }
 
