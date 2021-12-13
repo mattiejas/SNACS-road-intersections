@@ -51,8 +51,7 @@ def ANF(country, distance=5, r=7, k=128):
     anf = f"./ANF {dir}/{country}-highways.csv"
     print(f'Running ANF on {country}...')
     result = subprocess.run(anf, shell=True, stdout=subprocess.PIPE)
-    x = json.loads(result.stdout.decode('utf-8'))
-    print(x)  # TODO; generate graphs or something
+    return json.loads(result.stdout.decode('utf-8'))
 
 
 if __name__ == '__main__':
