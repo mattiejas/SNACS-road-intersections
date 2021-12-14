@@ -41,7 +41,17 @@ def simplify_graph(G):
     return g
 
 
-def ANF(country, distance=5, r=7, k=128, show_IN=False, verbose=False):
+def ANF(filename, distance=5, r=7, k=128, show_IN=False, verbose=False):
+    anf = f"./ANF {filename} {distance} {r} {k} {'true' if show_IN else 'false'}"
+    print_if_verbose(verbose, f'Running ANF on {filename}...')
+    result = subprocess.run(anf, shell=True, stdout=subprocess.PIPE)
+    x = json.loads(result.stdout.decode('utf-8'))
+    print_if_verbose(verbose, f'\n\n\n---------------------{filename}---------------------\n')
+    print_if_verbose(verbose, yaml.dump(x))
+    return x
+
+
+def download_and_run_ANF(country, distance=5, r=7, k=128, show_IN=False, verbose=False):
     dir = f'./data/{country}'
     if not os.path.exists(dir):
         os.makedirs(dir)
@@ -91,13 +101,8 @@ def ANF(country, distance=5, r=7, k=128, show_IN=False, verbose=False):
         print_if_verbose(verbose, f'{country}.png already exists.')
 
     # run ANF
-    anf = f"./ANF {dir}/{country}-highways.csv {distance} {r} {k} {'true' if show_IN else 'false'}"
-    print_if_verbose(verbose, f'Running ANF on {country}...')
-    result = subprocess.run(anf, shell=True, stdout=subprocess.PIPE)
-    x = json.loads(result.stdout.decode('utf-8'))
-    print_if_verbose(verbose, f'\n\n\n---------------------{country}---------------------\n')
-    print_if_verbose(verbose, yaml.dump(x))
-    return x
+    anf_filename = f"{dir}/{country}-highways.csv"
+    return ANF(anf_filename, distance=distance, r=r, k=k, show_IN=show_IN, verbose=verbose)
 
 
 if __name__ == '__main__':
@@ -122,4 +127,4 @@ if __name__ == '__main__':
     if len(sys.argv) >= 6:
         show_IN = sys.argv[5]
 
-    ANF(country, distance, r, k, show_IN, verbose=True)
+    download_and_run_ANF(country, distance, r, k, show_IN, verbose=True)
